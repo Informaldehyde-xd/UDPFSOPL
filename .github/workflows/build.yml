@@ -27,20 +27,11 @@ jobs:
       - name: Generate Gradle Wrapper if Missing
         run: |
           if [ ! -f "./gradlew" ]; then
-            echo "gradlew not found, generating wrapper files..."
-            # Generate in an isolated empty dir so it doesn't try to
-            # evaluate this project's build.gradle.kts (which fails
-            # trying to resolve the AGP plugin outside a real build).
-            mkdir -p /tmp/gradle-wrapper-gen
-            wget -q https://services.gradle.org/distributions/gradle-8.2-bin.zip -O /tmp/gradle-8.2-bin.zip
-            unzip -q /tmp/gradle-8.2-bin.zip -d /tmp
-            (cd /tmp/gradle-wrapper-gen && /tmp/gradle-8.2/bin/gradle wrapper --gradle-version 8.2)
-            cp -r /tmp/gradle-wrapper-gen/gradlew .
-            cp -r /tmp/gradle-wrapper-gen/gradlew.bat .
-            cp -r /tmp/gradle-wrapper-gen/gradle .
-            rm -rf /tmp/gradle-8.2-bin.zip /tmp/gradle-8.2 /tmp/gradle-wrapper-gen
-          else
-            echo "gradlew already present, skipping generation."
+            echo "Generating Gradle wrapper files..."
+            wget -q https://services.gradle.org/distributions/gradle-8.2-bin.zip
+            unzip -q gradle-8.2-bin.zip
+            ./gradle-8.2/bin/gradle wrapper --gradle-version 8.2
+            rm -rf gradle-8.2-bin.zip gradle-8.2
           fi
 
       - name: Grant Execute Permission to Gradle
