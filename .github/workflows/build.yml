@@ -1,0 +1,47 @@
+name: Build UDPFS Server
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle & Cache Dependencies
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Generate Gradle Wrapper if Missing
+        run: |
+          if [ ! -f "./gradlew" ]; then
+            echo "Generating Gradle wrapper files..."
+            wget -q https://services.gradle.org/distributions/gradle-8.2-bin.zip
+            unzip -q gradle-8.2-bin.zip
+            ./gradle-8.2/bin/gradle wrapper --gradle-version 8.2
+            rm -rf gradle-8.2-bin.zip gradle-8.2
+          fi
+
+      - name: Grant Execute Permission to Gradle
+        run: chmod +x gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: UDPFS-Server-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
