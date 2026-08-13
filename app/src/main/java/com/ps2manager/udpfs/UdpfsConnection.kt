@@ -24,6 +24,8 @@ class UdpfsConnection(
         session.resetCallback = { resetPeer() }
     }
 
+    fun processIncoming(data: ByteArray): ByteArray? = session.processDataPacket(data, data.size)
+
     fun sendAck(ack: Boolean) = session.sendAck(ack)
     fun sendOpenReply(handle: Int, st: StatInfo) = session.sendData(UdpfsPacking.packOpenReply(handle, st))
     fun sendReadResult(result: Int, data: ByteArray?) =
